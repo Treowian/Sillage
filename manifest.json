@@ -1,0 +1,16 @@
+{
+  "name": "Sillage",
+  "short_name": "Sillage",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#F9FAFB",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
