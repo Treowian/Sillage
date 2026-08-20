@@ -320,7 +320,10 @@
             loadLocal() {
                 try {
                     const raw = localStorage.getItem(this.KEYS.STATE);
-                    if (raw) this.data = JSON.parse(raw);
+                    if (raw) {
+                        this.data = JSON.parse(raw);
+                        this.sanitizeData(); // <-- Ajout du filet de sécurité
+                    }
                 } catch (e) { console.error("Erreur state", e); }
             },
 
@@ -331,7 +334,21 @@
                 if (!res.ok) throw new Error("API Error");
                 const gist = await res.json();
                 const file = gist.files['sillage_state.json'];
-                return file && file.content.trim() ? JSON.parse(file.content) : this.data;
+                
+                if (file && file.content.trim()) {
+                    this.data = JSON.parse(file.content);
+                    this.sanitizeData(); // <-- Ajout du filet de sécurité
+                }
+                return this.data;
+            },
+
+            // NOUVELLE FONCTION DE MIGRATION
+            sanitizeData() {
+                // Si l'ancien état utilisait "Jokers", on le convertit en "Detours"
+                if (this.data.availableDetours === undefined) {
+                    this.data.availableDetours = this.data.availableJokers || 0;
+                    delete this.data.availableJokers; // Nettoyage de l'ancienne clé
+                }
             },
 
             async save() {
