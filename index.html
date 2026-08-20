@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Sillage">
-    <!-- Remplace ces liens par tes propres icones plus tard -->
     <link rel="icon" type="image/png" href="icon.png">
+    <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
@@ -21,7 +21,7 @@
             --accent: #0F172A;
             --border: #E5E7EB;
             --danger: #EF4444;
-            --success: #10B981;
+            --epiphanie: #D4AF37;
             
             --font-main: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -76,109 +76,92 @@
             border-bottom-color: var(--text-primary);
         }
 
-        /* Auth Screen */
-        .auth-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 10vh;
-        }
-        
-        .auth-title {
-            font-family: var(--font-main);
-            font-size: 2.5rem;
-            text-align: center;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-        label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-        input {
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            background-color: var(--surface);
-            font-family: var(--font-sans);
-            outline: none;
-        }
-        input:focus { border-color: var(--accent); }
-        
-        .divider { border-top: 1px dashed var(--border); margin: 8px 0; }
-        .info-text { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
-        #error-msg { color: var(--danger); font-size: 0.85rem; min-height: 20px; text-align: center; }
-
-        /* Boutons */
+        /* Composants de base */
         button {
             width: 100%;
             padding: 16px 24px;
             font-size: 1rem;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.2s ease;
             border: none;
             font-weight: 600;
             font-family: var(--font-sans);
         }
 
-        .btn-primary { background-color: var(--accent); color: #FFFFFF; box-shadow: 0 4px 6px rgba(15, 23, 42, 0.1); }
-        .btn-primary:active { transform: scale(0.98); box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
+        .btn-primary { background-color: var(--accent); color: #FFFFFF; }
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
         .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--text-primary); }
-        .btn-outline:active { background-color: var(--surface); border-color: var(--text-secondary); }
+        .btn-outline:active { background-color: var(--surface); }
 
-        /* En-tête et Progression de Quête */
-        .stats {
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        input { padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background-color: var(--surface); outline: none; }
+        input:focus { border-color: var(--accent); }
+
+        /* Écrans de Pause (Intégration / Prêt) */
+        .empty-state-container {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 4px;
-            background-color: var(--border);
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .progress-fill {
-            position: absolute;
-            top: 0; left: 0; height: 100%;
-            background-color: var(--accent);
-            width: 0%;
-            border-radius: 4px;
-            transition: width 1s ease-in-out;
-        }
-
-        .milestones { display: flex; justify-content: space-between; position: relative; top: -6px; }
-        .milestone {
-            width: 8px; height: 8px;
-            background-color: var(--border);
-            border: 2px solid var(--bg);
-            border-radius: 50%;
-            z-index: 10;
-            transition: background-color 0.5s ease;
-        }
-        .milestone.reached { background-color: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
-        .milestone.legendary { transform: scale(1.3); }
-
-        /* Zone de Quête */
-        .quest-area {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 1.5s ease-in-out;
             flex-grow: 1;
+        }
+
+        .introspection-title {
+            font-family: var(--font-main);
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .introspection-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .breathing-circle {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            margin-bottom: 32px;
+            animation: breathe 4s infinite ease-in-out;
+        }
+
+        .btn-commitment {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px 32px;
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+            border-radius: 4px;
+            width: auto;
+        }
+        .btn-commitment:hover { background: var(--surface); border-color: var(--accent); }
+
+        /* Vue Étape Active */
+        .quest-area {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-top: 40px;
+            margin-top: 20px;
+        }
+
+        .stats {
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 600;
         }
 
         .category {
@@ -189,8 +172,7 @@
             margin-bottom: 24px;
             font-weight: 600;
         }
-        
-        .category.legendary { color: var(--gold-milestone, #D4AF37); }
+        .category.epiphanie { color: var(--epiphanie); }
 
         .quest-text {
             font-family: var(--font-main);
@@ -202,20 +184,6 @@
             margin-bottom: 48px;
         }
 
-        .timer {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-variant-numeric: tabular-nums;
-            margin-bottom: 48px;
-            padding: 10px 20px;
-            background-color: var(--surface);
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            font-weight: 500;
-            text-align: center;
-        }
-
         .actions { display: flex; flex-direction: column; gap: 12px; width: 100%; }
         
         .btn-skip {
@@ -225,12 +193,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
-            font-size: 1rem;
-            border-radius: 12px;
-            cursor: pointer;
         }
-        .btn-skip:active:not(:disabled) { background-color: var(--surface); border-color: var(--text-secondary); }
+        .btn-skip:active:not(:disabled) { background-color: var(--surface); }
         .btn-skip:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .joker-count {
@@ -241,151 +205,107 @@
             font-size: 0.75rem;
             border: 1px solid var(--border);
         }
-        .joker-active { color: var(--success); border-color: var(--success); background-color: rgba(16, 185, 129, 0.1); }
 
-        /* Journal (Sillage) */
-        .journal-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding-bottom: 40px;
-        }
-        
-        .journal-item {
-            background-color: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        
-        .journal-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .journal-text {
-            font-family: var(--font-main);
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            line-height: 1.4;
-        }
-
-        .empty-state { text-align: center; color: var(--text-secondary); font-style: italic; margin-top: 40px; font-family: var(--font-main); font-size: 1.1rem; }
+        /* Sillage (Historique) */
+        .journal-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; }
+        .journal-item { background-color: var(--surface); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+        .journal-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .journal-text { font-family: var(--font-main); font-size: 1.2rem; color: var(--text-primary); line-height: 1.4; }
 
         .hidden { display: none !important; }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Écran d'Authentification -->
+    <!-- Auth -->
     <div class="container" id="auth-screen">
-        <div class="auth-container">
-            <h1 class="auth-title">Sillage</h1>
-            
-            <button class="btn-primary" onclick="app.startLocalMode()">Utiliser sans compte (Local)</button>
-            
-            <div class="divider"></div>
-            
-            <div class="info-text">
-                <span>🔒</span> Optionnel : Synchroniser avec GitHub Gist pour le cloud.
+        <div style="margin-top: 10vh;">
+            <h1 style="font-family: var(--font-main); font-size: 2.5rem; text-align: center; margin-bottom: 2rem;">Sillage</h1>
+            <button class="btn-primary" onclick="app.startLocalMode()">Continuer en Local</button>
+            <div style="border-top: 1px dashed var(--border); margin: 24px 0;"></div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Synchronisation Cloud (GitHub Gist)</p>
+            <div class="form-group">
+                <input type="text" id="gist-id" placeholder="ID du Gist" autocomplete="off">
             </div>
-
-            <div>
-                <div class="form-group">
-                    <label for="gist-id">ID du Gist :</label>
-                    <input type="text" id="gist-id" placeholder="Ex: a1b2c3d4..." autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <label for="github-token">Token GitHub :</label>
-                    <input type="password" id="github-token" placeholder="ghp_..." autocomplete="off">
-                </div>
-
-                <div id="error-msg"></div>
-                <button class="btn-outline" id="btn-sync" style="margin-top: 8px;" onclick="app.startCloudMode()">Connecter GitHub</button>
+            <div class="form-group">
+                <input type="password" id="github-token" placeholder="Token GitHub" autocomplete="off">
             </div>
+            <div id="error-msg" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 16px;"></div>
+            <button class="btn-outline" id="btn-sync" onclick="app.startCloudMode()">Connecter</button>
         </div>
     </div>
 
-    <!-- Application Principale -->
+    <!-- App -->
     <div class="container hidden" id="app-screen">
         <nav>
-            <div class="nav-item active" onclick="app.switchTab('quest')" id="tab-quest">La Quête</div>
+            <div class="nav-item active" onclick="app.switchTab('quest')" id="tab-quest">Le Chemin</div>
             <div class="nav-item" onclick="app.switchTab('journal')" id="tab-journal">Le Sillage</div>
         </nav>
 
-        <!-- Vue Quête -->
         <div id="view-quest">
-            <header>
-                <div class="stats">
-                    <span id="cycle-display">Cycle 0 / 73</span>
-                    <span id="joker-header-display">0 Joker</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progress-bar"></div>
-                </div>
-                <div class="milestones" id="milestones-container">
-                    <div class="milestone" id="ms-1"></div>
-                    <div class="milestone" id="ms-2"></div>
-                    <div class="milestone" id="ms-3"></div>
-                    <div class="milestone" id="ms-4"></div>
-                    <div class="milestone legendary" id="ms-5"></div>
-                </div>
-            </header>
+            <div class="stats" id="step-display">Étape 1</div>
 
             <main class="quest-area">
-                <!-- État Aucun quête -->
-                <div id="no-quest-state" style="width: 100%;">
-                    <h1 class="quest-text" style="font-size: 1.5rem; color: var(--text-secondary);">Le chemin est libre.</h1>
-                    <button class="btn-primary" onclick="engine.drawQuest()">Tracer la prochaine étape</button>
+                
+                <!-- 1. État : Intégration (Cooldown 5 jours) -->
+                <div id="integration-state" class="empty-state-container hidden">
+                    <div class="breathing-circle"></div>
+                    <p class="introspection-text">Laissez vos récentes actions décanter.<br>Le temps fait son œuvre.</p>
                 </div>
 
-                <!-- État Quête Active -->
+                <!-- 2. État : Prêt -->
+                <div id="ready-state" class="empty-state-container hidden">
+                    <h2 class="introspection-title">Un nouveau chemin se présente.</h2>
+                    <p class="introspection-text">Ne l'acceptez que si vous avez l'espace mental pour vous y consacrer.</p>
+                    <button class="btn-commitment" onclick="engine.drawQuest()">Faire le premier pas</button>
+                </div>
+
+                <!-- 3. État : Action (Étape Active) -->
                 <div id="active-quest-state" class="hidden" style="width: 100%;">
                     <div class="category" id="quest-category">Catégorie</div>
-                    <h1 class="quest-text" id="quest-text">Texte de la quête</h1>
-                    <div class="timer" id="quest-timer">Temps restant : --</div>
+                    <h1 class="quest-text" id="quest-text">Texte</h1>
                     
-                    <div class="actions">
+                    <div class="actions" style="margin-top: 48px;">
                         <button class="btn-primary" onclick="engine.completeQuest()">Marquer comme accomplie</button>
                         <button class="btn-skip" id="btn-skip" onclick="engine.skipQuest()">
-                            <span>Passer cette quête</span>
-                            <span class="joker-count" id="joker-display">0 Joker dispo</span>
+                            <span>Emprunter un détour</span>
+                            <span class="joker-count" id="joker-display">0 Détour</span>
                         </button>
                     </div>
                 </div>
             </main>
         </div>
 
-        <!-- Vue Journal -->
         <div id="view-journal" class="hidden">
             <div id="journal-list" class="journal-list"></div>
         </div>
     </div>
 
     <script>
-        /**
-         * BASE DE DONNÉES DES QUÊTES (Générée à partir de l'Excel)
-         */
-        const QUESTS_DB = [{"id": 1, "category": "Exploration", "text": "Suis une odeur intéressante dans la rue jusqu'à sa source.", "rarity": "common"}, {"id": 2, "category": "Exploration", "text": "Repère le bâtiment le plus vieux visible depuis chez toi. Va toucher son mur.", "rarity": "common"}, {"id": 3, "category": "Exploration", "text": "Trouve l'arbre le plus insolite ou le plus vieux visible dans un rayon de 10 minutes à pied, et va le photographier.", "rarity": "common"}, {"id": 4, "category": "Exploration", "text": "Choisis une station de métro/bus juste parce que son nom te plaît, et va t'y promener", "rarity": "common"}, {"id": 5, "category": "Exploration", "text": "Prends le premier bus qui passe, descends à un arrêt inconnu, rentre à pied.", "rarity": "common"}, {"id": 6, "category": "Exploration", "text": "Trouve l'endroit le plus silencieux à 15 minutes de chez toi. Reste-y 10 minutes.", "rarity": "common"}, {"id": 7, "category": "Exploration", "text": "Ferme les yeux 30 secondes en pleine rue, rouvre-les, note ce que tu remarques en premier.", "rarity": "common"}, {"id": 8, "category": "Exploration", "text": "Repère une fenêtre éclairée le soir et invente l'histoire de qui y vit.", "rarity": "common"}, {"id": 9, "category": "Exploration", "text": "Va dans le magasin le plus improbable de ta ville sans rien acheter, juste pour regarder.", "rarity": "common"}, {"id": 10, "category": "Exploration", "text": "Trouve un point de vue en hauteur sur ta ville que tu n'as jamais essayé.", "rarity": "common"}, {"id": 11, "category": "Exploration", "text": "Repère trois façades de ta rue que tu n'as jamais vraiment regardées, et retiens un détail de chacune.", "rarity": "common"}, {"id": 12, "category": "Exploration", "text": "Lis enfin une plaque ou une inscription que tu croises tous les jours.", "rarity": "common"}, {"id": 13, "category": "Exploration", "text": "Trouve un raccourci que tu n'as jamais emprunté entre deux endroits que tu fréquentes souvent.", "rarity": "common"}, {"id": 14, "category": "Exploration", "text": "Repère le point le plus haut naturellement accessible près de chez toi (colline, pont, etc,) et monte dessus.", "rarity": "common"}, {"id": 15, "category": "Exploration", "text": "Choisis une destination uniquement à partir de son nom.", "rarity": "common"}, {"id": 16, "category": "Courage", "text": "Demande à quelqu'un pourquoi il/elle a fait un choix précis récemment, sans juger sa réponse.", "rarity": "common"}, {"id": 17, "category": "Courage", "text": "Annule un projet qui ne te motive plus. Dis-le à voix haute à quelqu'un.", "rarity": "common"}, {"id": 18, "category": "Courage", "text": "Écris à quelqu'un que tu admires, sans rien attendre en retour.", "rarity": "common"}, {"id": 19, "category": "Courage", "text": "Chante à voix haute dans un endroit public désert.", "rarity": "common"}, {"id": 20, "category": "Courage", "text": "Dis non à quelque chose que tu acceptes d'habitude par automatisme.", "rarity": "common"}, {"id": 21, "category": "Courage", "text": "Partage une opinion impopulaire, calmement, sans t'excuser après.", "rarity": "common"}, {"id": 22, "category": "Courage", "text": "Demande un retour honnête sur un truc que tu as fait, et ne te justifie pas.", "rarity": "common"}, {"id": 23, "category": "Courage", "text": "Va seul(e) à un événement où tu ne connais personne.", "rarity": "common"}, {"id": 24, "category": "Courage", "text": "Avoue à quelqu'un que tu t'es trompé(e) sur un point précis, même ancien.", "rarity": "common"}, {"id": 25, "category": "Courage", "text": "Propose une idée que tu gardes habituellement pour toi.", "rarity": "common"}, {"id": 26, "category": "Courage", "text": "Fais une chose que tu remets depuis plus d'un mois, aujourd'hui, sans préparation.", "rarity": "common"}, {"id": 27, "category": "Courage", "text": "Exprime un besoin précis à quelqu'un, sans t'excuser de le demander.", "rarity": "common"}, {"id": 28, "category": "Courage", "text": "Demande de l'aide pour un truc que tu penses \"devoir savoir faire seul(e)\".", "rarity": "common"}, {"id": 29, "category": "Courage", "text": "Improvise un discours de 2 minutes sur un sujet donné au hasard.", "rarity": "common"}, {"id": 30, "category": "Courage", "text": "Porte quelque chose que tu adores mais que tu n'oses jamais mettre.", "rarity": "common"}, {"id": 31, "category": "Creation", "text": "Invente un mot pour un sentiment courant qui n'a pas de nom en français.", "rarity": "common"}, {"id": 32, "category": "Creation", "text": "Dessine ta journée comme une carte au trésor, avec un \"X\" pour le meilleur moment.", "rarity": "common"}, {"id": 33, "category": "Creation", "text": "Écris une règle absurde pour une tâche banale, applique-la une fois.", "rarity": "common"}, {"id": 34, "category": "Creation", "text": "Fabrique un objet totalement inutile avec ce que tu as sous la main.", "rarity": "common"}, {"id": 35, "category": "Creation", "text": "Réécris la fin d'un film ou d'un livre que tu n'as pas aimée.", "rarity": "common"}, {"id": 36, "category": "Creation", "text": "Compose une chanson de 30 secondes sur un objet du quotidien.", "rarity": "common"}, {"id": 37, "category": "Creation", "text": "Crée un glossaire de 5 mots que toi seul(e) utilises, avec leur définition.", "rarity": "common"}, {"id": 38, "category": "Creation", "text": "Photographie 10 textures différentes en 10 minutes, sans réfléchir à la composition.", "rarity": "common"}, {"id": 39, "category": "Creation", "text": "Écris une recette imaginaire pour un plat qui n'existe pas.", "rarity": "common"}, {"id": 40, "category": "Creation", "text": "Réinvente les règles d'un jeu que tu connais par cœur, propose ta version à quelqu'un.", "rarity": "common"}, {"id": 41, "category": "Creation", "text": "Fais le portrait de quelqu'un sans dessiner son visage.", "rarity": "common"}, {"id": 42, "category": "Creation", "text": "Écris une lettre de la part d'un objet que tu possèdes, adressée à toi.", "rarity": "common"}, {"id": 43, "category": "Creation", "text": "Construis quelque chose qui tient debout uniquement avec du papier.", "rarity": "common"}, {"id": 44, "category": "Creation", "text": "Transforme un souvenir raté en petite BD de 4 cases.", "rarity": "common"}, {"id": 45, "category": "Creation", "text": "Crée une playlist pour un lieu précis de ta ville.", "rarity": "common"}, {"id": 46, "category": "Wisdom", "text": "Choisis un objet du quotidien et découvre comment il est réellement fabriqué.", "rarity": "rare"}, {"id": 47, "category": "Wisdom", "text": "Cherche l'origine d'un mot que tu utilises tous les jours.", "rarity": "rare"}, {"id": 48, "category": "Wisdom", "text": "Passe une soirée à observer sans juger : note 10 détails jamais remarqués.", "rarity": "rare"}, {"id": 49, "category": "Wisdom", "text": "Demande à un aîné un conseil qu'il/elle aurait aimé recevoir à ton âge.", "rarity": "rare"}, {"id": 50, "category": "Wisdom", "text": "Trouve une croyance ancienne chez toi et cherche activement une preuve du contraire.", "rarity": "rare"}, {"id": 51, "category": "Wisdom", "text": "Explique à voix haute un concept que tu crois maîtriser. Note où tu bloques.", "rarity": "rare"}, {"id": 52, "category": "Wisdom", "text": "Lis un point de vue opposé au tien jusqu'au bout.", "rarity": "rare"}, {"id": 53, "category": "Wisdom", "text": "Note trois décisions récentes prises par habitude plutôt que par choix.", "rarity": "rare"}, {"id": 54, "category": "Wisdom", "text": "Apprends à réparer un objet du quotidien que tu remplaces d'habitude.", "rarity": "rare"}, {"id": 55, "category": "Wisdom", "text": "Écoute un épisode entier sur un sujet que tu trouves \"ennuyeux\" a priori.", "rarity": "rare"}, {"id": 56, "category": "Wisdom", "text": "Demande à quelqu'un comment il/elle a développé une compétence que tu admires.", "rarity": "rare"}, {"id": 57, "category": "Wisdom", "text": "Regarde tes dernières dépenses et vois ce qu'elles disent de tes vraies priorités.", "rarity": "rare"}, {"id": 58, "category": "Wisdom", "text": "Reformule un désaccord récent du point de vue de l'autre, honnêtement.", "rarity": "rare"}, {"id": 59, "category": "Wisdom", "text": "Cherche comment fonctionnait ton quartier il y a 100 ans.", "rarity": "rare"}, {"id": 60, "category": "Wisdom", "text": "Note une peur précise, puis liste ce qu'elle t'a empêché de faire ce mois-ci.", "rarity": "rare"}, {"id": 61, "category": "Connection", "text": "Retrouve et remercie quelqu'un qui t'a marqué sans jamais le savoir.", "rarity": "rare"}, {"id": 62, "category": "Connection", "text": "Raconte un souvenir précis à quelqu'un qui l'a vécu avec toi. Comparez vos versions.", "rarity": "rare"}, {"id": 63, "category": "Connection", "text": "Retrouve une vieille photo avec quelqu'un et raconte-lui ce dont tu te souviens de ce moment précis.", "rarity": "rare"}, {"id": 64, "category": "Connection", "text": "Propose une activité totalement nouvelle à quelqu'un que tu connais depuis des années.", "rarity": "rare"}, {"id": 65, "category": "Connection", "text": "Demande à un proche ce qu'il/elle a vraiment pensé de toi la première fois.", "rarity": "rare"}, {"id": 66, "category": "Connection", "text": "Passe une soirée sans écran avec quelqu'un, jusqu'à ce que l'ennui devienne intéressant.", "rarity": "rare"}, {"id": 67, "category": "Connection", "text": "Écris à quelqu'un ce que tu n'as jamais réussi à lui dire en face.", "rarity": "rare"}, {"id": 68, "category": "Connection", "text": "Demande à un proche de te raconter un souvenir de toi que tu as oublié.", "rarity": "rare"}, {"id": 69, "category": "Connection", "text": "Fais quelque chose d'utile pour quelqu'un sans qu'il/elle sache que c'est toi.", "rarity": "rare"}, {"id": 70, "category": "Connection", "text": "Demande \"et toi, comment tu vas vraiment ?\" et attends la vraie réponse.", "rarity": "rare"}, {"id": 71, "category": "Connection", "text": "Retrouve une personne perdue de vue sans conflit, juste par oubli.", "rarity": "rare"}, {"id": 72, "category": "Connection", "text": "Demande à quelqu'un ce qui, chez toi, l'a fait rester dans ta vie.", "rarity": "rare"}, {"id": 73, "category": "Legendary", "text": "Retourne seul(e) sur le lieu d'un souvenir marquant. Note ce que ça te fait aujourd'hui, pas hier.", "rarity": "epic"}, {"id": 74, "category": "Legendary", "text": "Écris ton propre éloge, pas macabre — juste pour clarifier ce qui compte vraiment.", "rarity": "epic"}, {"id": 75, "category": "Legendary", "text": "Passe une journée entière à faire uniquement ce que \"tu n'as jamais le temps de faire\".", "rarity": "epic"}, {"id": 76, "category": "Legendary", "text": "Retrouve un objet de ton enfance et explique en une phrase pourquoi il comptait.", "rarity": "epic"}, {"id": 77, "category": "Legendary", "text": "Passe 24h sans dire un seul mensonge, même petit.", "rarity": "epic"}, {"id": 78, "category": "Legendary", "text": "Liste ce que tu ferais si tu savais que tu ne pouvais pas échouer, puis commence l'une d'elles.", "rarity": "epic"}, {"id": 79, "category": "Legendary", "text": "Retrace en une page le chemin qui t'a mené jusqu'à aujourd'hui, sans le lisser.", "rarity": "epic"}, {"id": 80, "category": "Legendary", "text": "Choisis ce que tu remets depuis des années et fixe une date ferme et publique pour t'y confronter.", "rarity": "epic"}];
+        // TODO: Colle ici l'intégralité du JSON généré précédemment contenant les 80 quêtes
+        const QUESTS_DB = [
+            {id: 1, category: "Exploration", text: "Suis une odeur intéressante dans la rue jusqu'à sa source.", rarity: "common"},
+            {id: 73, category: "Épiphanie", text: "Retourne seul(e) sur le lieu d'un souvenir marquant. Note ce que ça te fait aujourd'hui, pas hier.", rarity: "epic"}
+            // ... Ajoute le reste ici
+        ];
 
-        /**
-         * MOTEUR DE SYNCHRONISATION (Local + Gist)
-         */
         const StorageManager = {
             KEYS: { STATE: 'sillage_state', GIST_ID: 'sillage_gist_id', TOKEN: 'sillage_token' },
             data: { 
-                initializedAt: Date.now(), 
                 questsCompletedCount: 0, 
                 completedQuestIds: [], 
-                availableJokers: 0,
-                currentQuest: null,
+                availableDetours: 0,
+                currentQuest: null, // { id, acceptedAt }
+                lastCompletedAt: null, // Timestamp de la dernière complétion
                 history: []
             },
             isCloud: false,
@@ -395,12 +315,10 @@
                 const gistId = localStorage.getItem(this.KEYS.GIST_ID);
                 if (token && gistId) {
                     this.isCloud = true;
-                    app.startCloudMode(true); // auto-login
+                    app.startCloudMode(true);
                 } else {
                     this.loadLocal();
-                    if(localStorage.getItem('sillage_mode') === 'local') {
-                        app.startLocalMode();
-                    }
+                    if(localStorage.getItem('sillage_mode') === 'local') app.startLocalMode();
                 }
             },
 
@@ -408,7 +326,7 @@
                 try {
                     const raw = localStorage.getItem(this.KEYS.STATE);
                     if (raw) this.data = JSON.parse(raw);
-                } catch (e) { console.error("Erreur lecture state", e); }
+                } catch (e) { console.error("Erreur state", e); }
             },
 
             async fetchGist(gistId, token) {
@@ -418,8 +336,7 @@
                 if (!res.ok) throw new Error("API Error");
                 const gist = await res.json();
                 const file = gist.files['sillage_state.json'];
-                if (!file) throw new Error("File not found in Gist");
-                return file.content.trim() ? JSON.parse(file.content) : this.data;
+                return file && file.content.trim() ? JSON.parse(file.content) : this.data;
             },
 
             async save() {
@@ -433,134 +350,72 @@
                             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ files: { 'sillage_state.json': { content: JSON.stringify(this.data, null, 2) } } })
                         });
-                    } catch (e) { console.warn("Échec Synchro Cloud. Sauvé en local."); }
+                    } catch (e) { console.warn("Cloud save failed."); }
                 }
             }
         };
 
-        /**
-         * MOTEUR DE JEU (Logique des Quêtes)
-         */
         const engine = {
-            QUEST_DURATION: 5 * 24 * 60 * 60 * 1000, // 5 jours en ms
-            timerInterval: null,
-
-            getQuestById(id) {
-                return QUESTS_DB.find(q => q.id === id);
-            },
+            COOLDOWN_MS: 5 * 24 * 60 * 60 * 1000, // 5 jours purs
 
             drawQuest() {
                 const state = StorageManager.data;
-                const nextQuestNumber = state.questsCompletedCount + 1;
+                const nextStep = state.questsCompletedCount + 1;
+                const isEpiphanie = (nextStep % 15 === 0);
                 
-                // Règle du Boss Légendaire : Tous les 15 paliers (15, 30, 45, 60, 75...)
-                const isMilestone = (nextQuestNumber % 15 === 0);
-                
-                // Filtrer les quêtes non faites
                 let available = QUESTS_DB.filter(q => !state.completedQuestIds.includes(q.id));
-                
-                if (available.length === 0) {
-                    alert("Tu as accompli toutes les quêtes du jeu. Bravo.");
-                    return;
-                }
+                if (available.length === 0) return alert("Le chemin est achevé.");
 
-                if (isMilestone) {
-                    // Forcer Légendaire
+                if (isEpiphanie) {
                     const epics = available.filter(q => q.rarity === 'epic');
                     if (epics.length > 0) available = epics; 
                 } else {
-                    // Retirer les Légendaires du tirage normal pour garder leur rareté
                     available = available.filter(q => q.rarity !== 'epic');
-                    if(available.length === 0) available = QUESTS_DB.filter(q => !state.completedQuestIds.includes(q.id)); // Fallback
+                    if(available.length === 0) available = QUESTS_DB.filter(q => !state.completedQuestIds.includes(q.id));
                 }
 
-                // Tirage aléatoire équiprobable dans le pool filtré
                 const drawn = available[Math.floor(Math.random() * available.length)];
                 
-                state.currentQuest = {
-                    id: drawn.id,
-                    acceptedAt: Date.now(),
-                    deadline: Date.now() + this.QUEST_DURATION
-                };
-
+                state.currentQuest = { id: drawn.id, acceptedAt: Date.now() };
                 StorageManager.save();
                 app.renderQuestState();
             },
 
             completeQuest() {
                 const state = StorageManager.data;
-                const quest = this.getQuestById(state.currentQuest.id);
+                const quest = QUESTS_DB.find(q => q.id === state.currentQuest.id);
                 
-                // Ajouter à l'historique
                 state.history.unshift({
-                    id: quest.id,
-                    text: quest.text,
-                    category: quest.category,
-                    completedAt: Date.now()
+                    id: quest.id, text: quest.text, category: quest.category, completedAt: Date.now()
                 });
                 
                 state.completedQuestIds.push(quest.id);
                 state.questsCompletedCount++;
+                state.lastCompletedAt = Date.now();
                 
-                // Mécanique de Joker (1 gagné toutes les 6 quêtes)
+                // 1 Détour gagné toutes les 6 étapes
                 if (state.questsCompletedCount % 6 === 0) {
-                    state.availableJokers = Math.min(1, state.availableJokers + 1);
+                    state.availableDetours = Math.min(1, state.availableDetours + 1);
                 }
                 
                 state.currentQuest = null;
                 StorageManager.save();
                 app.renderQuestState();
-                app.renderJournal(); // MAJ vue journal
+                app.renderJournal();
             },
 
             skipQuest() {
                 const state = StorageManager.data;
-                if (state.availableJokers > 0) {
-                    state.availableJokers--;
-                    // On garde la quête dans la DB pour la repiocher potentiellement plus tard, 
-                    // ou on l'élimine. Dans ton game design, on l'élimine pour qu'elle ne revienne pas de suite.
+                if (state.availableDetours > 0) {
+                    state.availableDetours--;
                     state.completedQuestIds.push(state.currentQuest.id); 
-                    
                     state.currentQuest = null;
                     StorageManager.save();
                     app.renderQuestState();
                 }
-            },
-
-            updateTimer() {
-                const state = StorageManager.data;
-                const timerEl = document.getElementById('quest-timer');
-                if (!state.currentQuest) return;
-
-                const now = Date.now();
-                const diff = state.currentQuest.deadline - now;
-
-                if (diff <= 0) {
-                    timerEl.textContent = "Le temps est écoulé. Complète ou abandonne.";
-                    timerEl.style.color = "var(--danger)";
-                    timerEl.style.borderColor = "var(--danger)";
-                    return;
-                }
-
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const m = Math.floor((diff / 1000 / 60) % 60);
-
-                timerEl.textContent = `Temps restant : ${d}j ${h}h ${m}m`;
-                timerEl.style.color = "var(--text-secondary)";
-                timerEl.style.borderColor = "var(--border)";
-            },
-            
-            startTimer() {
-                if (this.timerInterval) clearInterval(this.timerInterval);
-                this.updateTimer();
-                this.timerInterval = setInterval(() => this.updateTimer(), 60000);
             }
         };
 
-        /**
-         * LOGIQUE D'INTERFACE (UI)
-         */
         const app = {
             startLocalMode() {
                 localStorage.setItem('sillage_mode', 'local');
@@ -572,7 +427,6 @@
             async startCloudMode(isAuto = false) {
                 const btn = document.getElementById('btn-sync');
                 const err = document.getElementById('error-msg');
-                
                 let gistId = localStorage.getItem(StorageManager.KEYS.GIST_ID);
                 let token = localStorage.getItem(StorageManager.KEYS.TOKEN);
 
@@ -581,28 +435,23 @@
                     token = document.getElementById('github-token').value.trim();
                 }
 
-                if (!gistId || !token) {
-                    err.textContent = "Remplissez les champs."; return;
-                }
+                if (!gistId || !token) { err.textContent = "Champs requis."; return; }
 
                 try {
-                    if(btn) { btn.disabled = true; btn.textContent = "Connexion..."; }
+                    if(btn) btn.textContent = "Connexion...";
                     const remoteData = await StorageManager.fetchGist(gistId, token);
-                    
                     localStorage.setItem(StorageManager.KEYS.GIST_ID, gistId);
                     localStorage.setItem(StorageManager.KEYS.TOKEN, token);
                     localStorage.setItem('sillage_mode', 'cloud');
                     
                     StorageManager.isCloud = true;
                     StorageManager.data = remoteData;
-                    StorageManager.save(); // sync local
-                    
+                    StorageManager.save(); 
                     this.boot();
                 } catch (e) {
-                    console.error(e);
-                    err.textContent = "Échec. Vérifiez vos identifiants ou votre connexion.";
-                    if(btn) { btn.disabled = false; btn.textContent = "Connecter GitHub"; }
-                    if (isAuto) this.startLocalMode(); // Fallback offline
+                    err.textContent = "Échec de connexion.";
+                    if(btn) btn.textContent = "Connecter";
+                    if (isAuto) this.startLocalMode();
                 }
             },
 
@@ -616,7 +465,6 @@
             switchTab(tab) {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 document.getElementById(`tab-${tab}`).classList.add('active');
-                
                 document.getElementById('view-quest').classList.add('hidden');
                 document.getElementById('view-journal').classList.add('hidden');
                 document.getElementById(`view-${tab}`).classList.remove('hidden');
@@ -624,98 +472,76 @@
 
             renderQuestState() {
                 const state = StorageManager.data;
-                const cycleTotal = 73;
-                const current = state.questsCompletedCount % cycleTotal;
+                const now = Date.now();
                 
-                // Header Stats
-                document.getElementById('cycle-display').textContent = `Cycle ${current} / ${cycleTotal}`;
-                document.getElementById('joker-header-display').textContent = `${state.availableJokers} Joker${state.availableJokers > 1 ? 's':''}`;
-                
-                // Progress Bar
-                const pct = (current / cycleTotal) * 100;
-                document.getElementById('progress-bar').style.width = `${pct}%`;
-                
-                // Milestones (15, 30, 45, 60, 73)
-                const milestones = [15, 30, 45, 60, 73];
-                milestones.forEach((m, idx) => {
-                    const msEl = document.getElementById(`ms-${idx+1}`);
-                    if (current >= m) msEl.classList.add('reached');
-                    else msEl.classList.remove('reached');
-                });
+                document.getElementById('step-display').textContent = `Étape ${state.questsCompletedCount + 1}`;
 
-                // Views
-                const noQuest = document.getElementById('no-quest-state');
-                const activeQuest = document.getElementById('active-quest-state');
+                const integrationEl = document.getElementById('integration-state');
+                const readyEl = document.getElementById('ready-state');
+                const activeEl = document.getElementById('active-quest-state');
+
+                // Réinitialiser l'affichage
+                integrationEl.classList.add('hidden');
+                readyEl.classList.add('hidden');
+                activeEl.classList.add('hidden');
 
                 if (state.currentQuest) {
-                    noQuest.classList.add('hidden');
-                    activeQuest.classList.remove('hidden');
+                    // Étape en cours
+                    activeEl.classList.remove('hidden');
+                    const q = QUESTS_DB.find(x => x.id === state.currentQuest.id);
                     
-                    const q = engine.getQuestById(state.currentQuest.id);
                     const catEl = document.getElementById('quest-category');
-                    catEl.textContent = q.category;
-                    catEl.className = `category ${q.rarity === 'epic' ? 'legendary' : ''}`;
-                    
+                    catEl.textContent = q.category === 'Legendary' ? 'Épiphanie' : q.category;
+                    catEl.className = `category ${q.rarity === 'epic' ? 'epiphanie' : ''}`;
                     document.getElementById('quest-text').textContent = q.text;
                     
-                    // Jokers
+                    // Gestion du bouton Détour
                     const btnSkip = document.getElementById('btn-skip');
-                    const jokerDisp = document.getElementById('joker-display');
-                    jokerDisp.textContent = `${state.availableJokers} Joker`;
-                    
-                    if (state.availableJokers > 0) {
-                        btnSkip.disabled = false;
-                        jokerDisp.classList.add('joker-active');
-                    } else {
-                        btnSkip.disabled = true;
-                        jokerDisp.classList.remove('joker-active');
-                    }
+                    document.getElementById('joker-display').textContent = `${state.availableDetours} Détour${state.availableDetours > 1 ? 's':''}`;
+                    btnSkip.disabled = state.availableDetours === 0;
 
-                    engine.startTimer();
                 } else {
-                    noQuest.classList.remove('hidden');
-                    activeQuest.classList.add('hidden');
-                    if (engine.timerInterval) clearInterval(engine.timerInterval);
+                    // Vérification du Cooldown
+                    if (state.lastCompletedAt && (now - state.lastCompletedAt < engine.COOLDOWN_MS)) {
+                        integrationEl.classList.remove('hidden');
+                    } else {
+                        readyEl.classList.remove('hidden');
+                    }
                 }
             },
 
             renderJournal() {
                 const state = StorageManager.data;
                 const list = document.getElementById('journal-list');
-                list.innerHTML = '';
-
+                
                 if (state.history.length === 0) {
-                    list.innerHTML = '<div class="empty-state">Ton sillage est encore vierge. Accomplis ta première quête.</div>';
+                    list.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-style:italic; margin-top:40px;">Aucune trace pour le moment.</p>';
                     return;
                 }
 
-                state.history.forEach(item => {
+                list.innerHTML = state.history.map(item => {
                     const d = new Date(item.completedAt);
                     const dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+                    const catName = item.category === 'Legendary' ? 'Épiphanie' : item.category;
                     
-                    list.innerHTML += `
+                    return `
                         <div class="journal-item">
                             <div class="journal-meta">
-                                <span>${item.category}</span>
+                                <span style="${item.category === 'Legendary' ? 'color:var(--epiphanie)' : ''}">${catName}</span>
                                 <span>${dateStr}</span>
                             </div>
                             <div class="journal-text">${item.text}</div>
                         </div>
                     `;
-                });
+                }).join('');
             }
         };
 
-        // Service Worker (Optionnel pour PWA)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(() => {});
-            });
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
         }
 
-        // Lancement auto si credentials existent
         StorageManager.init();
-
     </script>
 </body>
 </html>
