@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sillage - Générateur d'Icône</title>
+    <style>
+        :root {
+            --bg-page: #E5E7EB;
+            --bg-icon: #F9FAFB; /* Le fond clair de ton app */
+            --ink: #0F172A;     /* Le texte sombre de ton app */
+        }
+
+        body { 
+            background: var(--bg-page); 
+            color: #111827; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 3rem; 
+        }
+
+        canvas { 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            border-radius: 114px; /* Simulation de l'arrondi iOS */
+            margin-bottom: 2rem; 
+            background: var(--bg-icon);
+        }
+
+        button { 
+            background: var(--ink); 
+            color: white; 
+            border: none; 
+            padding: 1rem 2rem; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="margin-bottom: 0.5rem; font-family: ui-serif, Georgia, serif;">Sillage</h1>
+        <p>L'individu (le point) et la trace parcourue (le chemin discontinu).</p>
+    </div>
+
+    <canvas id="iconCanvas" width="512" height="512"></canvas>
+    
+    <button onclick="telechargerIcone()">Télécharger icon.png</button>
+
+    <script>
+        const initCanvas = () => {
+            const canvas = document.getElementById('iconCanvas');
+            if (!canvas || !canvas.getContext) return; 
+            
+            const ctx = canvas.getContext('2d');
+            const size = 512;
+            const centerX = size / 2;
+
+            // 1. Fond Sillage
+            ctx.fillStyle = '#F9FAFB';
+            ctx.fillRect(0, 0, size, size);
+
+            // 2. L'Individu (Le point en haut)
+            ctx.fillStyle = '#0F172A';
+            ctx.beginPath();
+            ctx.arc(centerX, 130, 26, 0, Math.PI * 2); // Rayon de 26 pour être visible
+            ctx.fill();
+
+            // 3. Le Chemin (Ligne fine discontinue)
+            ctx.strokeStyle = '#0F172A';
+            ctx.lineWidth = 16; // Assez fin pour l'élégance, assez épais pour l'export
+            ctx.lineCap = 'round';
+            
+            // Configuration des pointillés : [taille du trait, taille de l'espace]
+            ctx.setLineDash([24, 36]); 
+
+            ctx.beginPath();
+            // On commence juste sous le point
+            ctx.moveTo(centerX, 200);
+            
+            // On trace une courbe douce (courbe de Bézier) vers le bas
+            // Cela donne un côté organique au chemin (pas une ligne droite rigide)
+            ctx.bezierCurveTo(
+                centerX + 60, 300,  // Point de contrôle 1 (tire vers la droite)
+                centerX - 60, 420,  // Point de contrôle 2 (tire vers la gauche)
+                centerX, 520        // Point d'arrivée (en bas au centre)
+            );
+            
+            ctx.stroke();
+        };
+
+        const telechargerIcone = () => {
+            try {
+                const canvas = document.getElementById('iconCanvas');
+                const lien = document.createElement('a');
+                lien.download = 'icon.png'; 
+                lien.href = canvas.toDataURL('image/png');
+                lien.click();
+            } catch (err) {
+                console.error("Erreur d'export :", err);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', initCanvas);
+    </script>
+</body>
+</html>
